@@ -6,6 +6,8 @@ import streamlit_antd_components as sac
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
 
+from data import read_example
+
 
 st.set_page_config(
     page_title='OpenAI Data Extractor',
@@ -30,69 +32,86 @@ with st.sidebar:
     openai.organization  = openai_organization_id
     openai.api_key = openai_api_key
 
+# Section to test the tool
+colored_header(
+    label='Try Yourself!',
+    description='Experiment the tool with your own data!'
+)
+
+# Display warnings if keys aren't provided
+if not openai_organization_id or not openai_api_key:
+    sac.alert(
+        message='Insert your OpenAI configurations in the sidemenu to be able to test the tool.', 
+        type='warning', 
+        icon=True
+    )
+elif (not openai_organization_id.startswith('org-')) or (not openai_api_key.startswith('sk-')):
+    sac.alert(
+        message="Wrong value for OpenAI credentials. Make sure that OpenAI Organization ID starts with 'org-' and OpenAI API Key starts with 'sk-'", 
+        type='error', 
+        icon=True
+    )
+
+# Example's section
+add_vertical_space(10)
 colored_header(
     label='Examples',
     description='Tree use case examples of using OpenAI/GPT to structure data from unstructured data.'
 )
 
-sac.segmented(
+# Example selection
+example_id = sac.segmented(
     items=[
-        sac.SegmentedItem(label='Example 1'),
-        sac.SegmentedItem(label='Example 2'),
-        sac.SegmentedItem(label='Example 3')
+        sac.SegmentedItem(label='Example 1 - Books'),
+        sac.SegmentedItem(label='Example 2 - Resumes'),
+        sac.SegmentedItem(label='Example 3 - News')
     ],
     align='center',
-    grow=True
+    grow=True,
+    return_index=True
 )
 
-documents = """
-In 'Pride and Prejudice' by Jane Austen, Elizabeth Bennet and Mr. Darcy navigate societal pressures and find love.
-J.K. Rowling's 'Harry Potter and the Sorcerer's Stone' introduces us to a young wizard discovering his identity.
-In 'To Kill a Mockingbird' by Harper Lee, Scout Finch witnesses racial injustice in her hometown.
-Bilbo Baggins embarks on an unexpected adventure in J.R.R. Tolkien's 'The Hobbit'.
-'Brave New World' by Aldous Huxley depicts a future society driven by technological advancements.
-""".strip()
-st.text_area(
-    label='Samples',
-    value=documents,
-    height=150
-)
-st.text_input(
-    label='Features to extract',
-    value='Title, Author, '
-)
+# Read example from csv file
+df = read_example(example_id=example_id)
 
-df = pd.read_csv('data/book_summaries.csv')
+# Display input documents from example
+col1, col2 = st.columns([.7, .3])
+with col1:
+    documents_mkd = "**Documents**\n"
+    for i, doc in enumerate(df['Document']):
+        documents_mkd += f"\n{i+1}. {doc}"
+    st.markdown(body=documents_mkd)
+
+# Display input features and data types
+with col2:
+    df_features = pd.DataFrame(
+        data=[
+            ['Title', '📃 String'],
+            ['Author', '📃 String'],
+            ['Main Character', '📃 String'],
+            ['Plot Summary', '📃 String']
+        ],
+        columns=['Feature Name', 'Data Type']
+    )
+
+    st.markdown('**Features**')
+    st.dataframe(
+        df_features,
+        hide_index=True,
+        column_config={
+            'Feature Name': st.column_config.TextColumn(width=120),
+            'Data Type': st.column_config.SelectboxColumn(width=120)
+        },
+        use_container_width=True
+    )
+
+add_vertical_space(2)
+st.markdown('**Results**')
 st.dataframe(
     data=df,
-    hide_index=True    
-)
-
-prompt = """
-You are provided with a text in triple backticks. Extract the following details from the text along with their specified data types:
-
-- "Title" (string)
-- "Author" (string)
-- "Main Character" (string)
-- "Plot Summary" (string)
-
-Ensure the response is in JSON format and only includes information explicitly mentioned within the text.
-
-
-Text:
-```
-{text}
-```
-
-Output:
-""".strip()
-st.text_area(
-    'Prompt',
-    value=prompt,
-    height=400
-)
-
-colored_header(
-    label='Try Yourself',
-    description='Experiment the tool with your own data!'
+    hide_index=True,
+    column_config={
+        'Document': None
+    },
+    use_container_width=True
 )
