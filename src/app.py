@@ -7,6 +7,7 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
 
 from data import read_example
+from utils import gen_prompt
 
 
 st.set_page_config(
@@ -56,7 +57,8 @@ with st.sidebar:
         )
     elif (not openai_organization_id.startswith('org-')) or (not openai_api_key.startswith('sk-')):
         sac.alert(
-            message="Wrong value for OpenAI credentials. Make sure that OpenAI Organization ID starts with 'org-' and OpenAI API Key starts with 'sk-'", 
+            message='Wrong value for OpenAI credentials.',
+            description="Make sure that OpenAI Organization ID starts with 'org-' and OpenAI API Key starts with 'sk-'", 
             type='error', 
             icon=True
         )
@@ -66,7 +68,7 @@ with st.sidebar:
 
     openai_model = st.selectbox(
         'Model:',
-        options=['gpt-3.5-turbo-instruct', 'gpt-4'],
+        options=['gpt-3.5-turbo', 'gpt-4'],
         disabled=True if openai_disabled else False,
         help='ID of the model to use.'
     )
@@ -103,7 +105,7 @@ with col1:
 
 with col2:
     st.markdown('**Features**')
-    st.data_editor(
+    df_features_input = st.data_editor(
         data=pd.DataFrame(columns=['Feature Name', 'Data Type']),
         use_container_width=True,
         hide_index=True,
@@ -116,10 +118,47 @@ with col2:
                     '*️⃣ Float',
                     '📅 Date',
                     '🕡 Datetime'
-                ]
+                ],
+                required=True
             )
         }
     )
+
+# Split documents by line
+input_documents = input_documents.split('\n')
+
+# Submit button
+add_vertical_space(2)
+button_cols = st.columns(3)
+if button_cols[1].button('Extract Features', type='primary', use_container_width=True):
+    add_vertical_space()
+
+    # TODO: Alert when no input was provide
+    if not input_documents:
+        pass
+
+    # Alert when no features are provided
+    elif df_features_input.empty:
+        sac.alert(
+            message='Input warning',
+            description='You must insert features to extract to be able to test the tool.', 
+            type='warning', 
+            icon=True
+        )
+
+    # Extract features and display results
+    else:
+        # TODO: Extract features with OpenAI
+        
+        # Display results
+        st.markdown('**Results**')
+        st.dataframe(
+            data=df_features_input,
+            hide_index=True,
+            use_container_width=True
+        )
+
+
 
 # Section - Examples
 add_vertical_space(10)
