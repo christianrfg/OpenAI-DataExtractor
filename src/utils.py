@@ -4,6 +4,7 @@ from typing import List
 
 import openai
 import pandas as pd
+import streamlit as st
 
 
 def gen_prompt(
@@ -46,19 +47,20 @@ def extract_features(
     )
 
     # Extract features for each document
-    results = []
-    for text in input_documents:
-        response = openai.ChatCompletion.create(
-            messages=[
-                {'role': 'user', 'content': prompt.format(text=text)}
-            ],
-            model=model,
-            max_tokens=max_tokens,
-            temperature=temperature
-        )
+    with st.spinner('Extracting features...'):
+        results = []
+        for text in input_documents:
+            response = openai.ChatCompletion.create(
+                messages=[
+                    {'role': 'user', 'content': prompt.format(text=text)}
+                ],
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
 
-        r = json.loads(response.choices[0].text.strip('```'))
-        results.append(r)
+            r = json.loads(response.choices[0].message.content.strip('```'))
+            results.append(r)
 
     # Convert to DataFrame to display
     df = pd.DataFrame(results)

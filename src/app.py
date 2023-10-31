@@ -7,7 +7,7 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
 
 from data import read_example
-from utils import gen_prompt
+from utils import extract_features
 
 
 st.set_page_config(
@@ -19,6 +19,8 @@ st.set_page_config(
 
 with st.sidebar:
     st.title('💎 OpenAI Data Extractor')
+    st.markdown("""A powerful OpenAI tool for extracting meaningful features from unstructured text, transforming raw data into structured data.""")
+
     add_vertical_space(3)
 
     sac.divider(
@@ -92,7 +94,7 @@ with st.sidebar:
 # Section - Try Yourself
 colored_header(
     label='🎯 Try Yourself!',
-    description='Experiment the tool with your own data!'
+    description='Test the tool using your own data for a personalized experience!'
 )
 
 col1, col2 = st.columns([.7, .3], gap='medium')
@@ -130,41 +132,42 @@ input_documents = input_documents.split('\n')
 # Submit button
 add_vertical_space(2)
 button_cols = st.columns(3)
-if button_cols[1].button('Extract Features', type='primary', use_container_width=True):
+if button_cols[1].button('Extract', type='primary', use_container_width=True):
     add_vertical_space()
 
-    # TODO: Alert when no input was provide
-    if not input_documents:
-        pass
-
     # Alert when no features are provided
-    elif df_features_input.empty:
+    if df_features_input.empty:
         sac.alert(
             message='Input warning',
-            description='You must insert features to extract to be able to test the tool.', 
+            description='You must insert documents and features to extract to be able to test the tool.', 
             type='warning', 
             icon=True
         )
 
     # Extract features and display results
     else:
-        # TODO: Extract features with OpenAI
+        # Extract features with OpenAI
+        df_features = extract_features(
+            df_features_input=df_features_input,
+            input_documents=input_documents,
+            model=openai_model,
+            max_tokens=openai_max_tokens,
+            temperature=openai_temperature
+        )
         
         # Display results
         st.markdown('**Results**')
         st.dataframe(
-            data=df_features_input,
+            data=df_features,
             hide_index=True,
             use_container_width=True
         )
 
-
-
 # Section - Examples
-add_vertical_space(10)
+add_vertical_space(3)
 colored_header(
     label='💡Examples',
-    description='Tree use case examples of using OpenAI/GPT to structure data from unstructured data.'
+    description="Three illustrative examples showcasing how OpenAI's GPT can transform unstructured data into structured formats."
 )
 
 # Example selection
