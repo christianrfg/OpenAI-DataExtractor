@@ -13,7 +13,7 @@ OpenAI Data Extractor is a robust tool that specializes in extracting meaningful
 
 To get a glimpse of what OpenAI Data Extractor can do, check out this animated demonstration:
 
-![](https://github.com/christianrfg/OpenAI-DataExtractor/tree/main/data/app_demonstration.gif)
+![](https://github.com/christianrfg/OpenAI-DataExtractor/blob/main/data/app_demonstration.gif)
 
 
 ## 🛠️ Setting Up and Running Locally
@@ -59,4 +59,4 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 ## 📝 License
 
-Distributed under the MIT License. See ![LICENSE](https://github.com/christianrfg/OpenAI-DataExtractor/blob/main/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/christianrfg/OpenAI-DataExtractor/blob/main/LICENSE) for more information.
