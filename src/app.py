@@ -49,24 +49,8 @@ with st.sidebar:
         bold=True
     )
 
-    # Display alerts if keys aren't provided
+    # Check if keys were provide
     openai_disabled = not openai_organization_id or not openai_api_key
-    if openai_disabled:
-        sac.alert(
-            message='Insert your OpenAI configurations to be able to test the tool.', 
-            type='warning', 
-            icon=True
-        )
-    elif (not openai_organization_id.startswith('org-')) or (not openai_api_key.startswith('sk-')):
-        sac.alert(
-            message='Wrong value for OpenAI credentials.',
-            description="Make sure that OpenAI Organization ID starts with 'org-' and OpenAI API Key starts with 'sk-'", 
-            type='error', 
-            icon=True
-        )
-    else:
-        openai.organization  = openai_organization_id
-        openai.api_key = openai_api_key
 
     openai_model = st.selectbox(
         'Model:',
@@ -96,6 +80,26 @@ colored_header(
     label='🎯 Try Yourself!',
     description='Test the tool using your own data for a personalized experience!'
 )
+
+# Display alerts if keys aren't provided
+if openai_disabled:
+    sac.alert(
+        message='OpenAI Configurations', 
+        description='Insert your OpenAI Configurations on the left menu to be able to test the tool.',
+        type='warning', 
+        icon=True
+    )
+elif (not openai_organization_id.startswith('org-')) or (not openai_api_key.startswith('sk-')):
+    sac.alert(
+        message='Wrong value for OpenAI credentials.',
+        description="Make sure that OpenAI Organization ID starts with 'org-' and OpenAI API Key starts with 'sk-'", 
+        type='error', 
+        icon=True
+    )
+else:
+        openai.organization  = openai_organization_id
+        openai.api_key = openai_api_key
+
 
 col1, col2 = st.columns([.7, .3], gap='medium')
 with col1:
@@ -132,7 +136,7 @@ input_documents = input_documents.split('\n')
 # Submit button
 add_vertical_space(2)
 button_cols = st.columns(3)
-if button_cols[1].button('Extract', type='primary', use_container_width=True):
+if button_cols[1].button('Extract', type='primary', use_container_width=True, disabled=openai_disabled):
     add_vertical_space()
 
     # Alert when no features are provided
