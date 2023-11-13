@@ -29,7 +29,7 @@ def read_example(
         # Outputs the features extracted from the dataset.
     """
     if example_id == 0:
-        df = pd.read_csv('data/book_summaries.csv')
+        df = pd.read_csv('data/example_book_summaries.csv')
 
         df_features = pd.DataFrame(
             data=[
@@ -44,7 +44,7 @@ def read_example(
         return df, df_features
 
     elif example_id == 1:
-        df = pd.read_csv('data/resumes.csv')
+        df = pd.read_csv('data/example_resumes.csv')
 
         df_features = pd.DataFrame(
             data=[
@@ -60,7 +60,7 @@ def read_example(
         return df, df_features
 
     elif example_id == 2:
-        df = pd.read_csv('data/news.csv')
+        df = pd.read_csv('data/example_news.csv')
 
         df_features = pd.DataFrame(
             data=[

@@ -1,8 +1,8 @@
 import streamlit as st
-import openai
 import pandas as pd
 import streamlit_antd_components as sac
 
+from openai import OpenAI
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
 
@@ -58,21 +58,19 @@ with st.sidebar:
         disabled=True if openai_disabled else False,
         help='ID of the model to use.'
     )
+
+    # Change to new OpenAI models
+    if openai_model == 'gpt-3.5-turbo':
+        openai_model = 'gpt-3.5-turbo-1106'
+    else:
+        openai_model = 'gpt-4-1106-preview'
+
     openai_max_tokens = st.number_input(
         'Max. tokens:',
         min_value=64,
         step=32,
         disabled=True if openai_disabled else False,
         help="The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model's context length."
-    )
-    openai_temperature = st.slider(
-        'Temperature:',
-        min_value=0.,
-        max_value=1.,
-        value=0.,
-        step=.1,
-        disabled=True if openai_disabled else False,
-        help='What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.'
     )
 
 # Section - Try Yourself
@@ -97,8 +95,12 @@ elif (not openai_organization_id.startswith('org-')) or (not openai_api_key.star
         icon=True
     )
 else:
-        openai.organization  = openai_organization_id
-        openai.api_key = openai_api_key
+    # Initialize OpenAI client
+    openai_client = OpenAI(
+        api_key=openai_api_key,
+        organization=openai_organization_id,
+        max_retries=5
+    )
 
 
 col1, col2 = st.columns([.7, .3], gap='medium')
@@ -106,7 +108,8 @@ with col1:
     input_documents = st.text_area(
         label='**Documents**',
         height=200,
-        help='Each line will be treated as an individual document.'
+        help='Each line will be treated as an individual document.',
+        disabled=openai_disabled
     )
 
 with col2:
@@ -116,6 +119,7 @@ with col2:
         use_container_width=True,
         hide_index=True,
         num_rows='dynamic',
+        disabled=openai_disabled,
         column_config={
             'Data Type': st.column_config.SelectboxColumn(
                 options=[
@@ -154,9 +158,9 @@ if button_cols[1].button('Extract', type='primary', use_container_width=True, di
         df_features = extract_features(
             df_features_input=df_features_input,
             input_documents=input_documents,
+            openai_client=openai_client,
             model=openai_model,
-            max_tokens=openai_max_tokens,
-            temperature=openai_temperature
+            max_tokens=openai_max_tokens
         )
         
         # Display results

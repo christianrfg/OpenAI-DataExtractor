@@ -2,9 +2,10 @@ import json
 
 from typing import List
 
-import openai
 import pandas as pd
 import streamlit as st
+
+from openai import OpenAI
 
 
 def gen_prompt(
@@ -27,8 +28,7 @@ def gen_prompt(
         'Text:\n'
         '```\n'
         '{text}\n'
-        '```\n\n'
-        'Output:'
+        '```'
     )
 
     return prompt
@@ -37,9 +37,9 @@ def gen_prompt(
 def extract_features(
         df_features_input: pd.DataFrame,
         input_documents: List[str],
+        openai_client: OpenAI,
         model: str,
-        max_tokens: int,
-        temperature: float
+        max_tokens: int
 ) -> pd.DataFrame:
     # Generate prompt
     prompt = gen_prompt(
@@ -50,16 +50,16 @@ def extract_features(
     with st.spinner('Extracting features...'):
         results = []
         for text in input_documents:
-            response = openai.ChatCompletion.create(
-                messages=[
-                    {'role': 'user', 'content': prompt.format(text=text)}
-                ],
+            response = openai_client.chat.completions.create(
+                messages=[{'role': 'user', 'content': prompt.format(text=text)}],
                 model=model,
                 max_tokens=max_tokens,
-                temperature=temperature
+                temperature=0.,
+                seed=42,
+                response_format={'type': 'json_object'}
             )
 
-            r = json.loads(response.choices[0].message.content.strip('```'))
+            r = json.loads(response.choices[0].message.content)
             results.append(r)
 
     # Convert to DataFrame to display
