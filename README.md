@@ -1,4 +1,4 @@
-<a href="https://openai-calc.streamlit.app/" title="Python Version"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"></a><br>
+<a href="https://openai-dataextractor.streamlit.app/" title="Streamlit app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"></a><br>
 <a href="https://github.com/arnaudmiribel/streamlit-extras/" title="Python Version"><img src="https://img.shields.io/badge/Python-3.9%2B-blue&style=flat"></a>
 <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fchristianrfg%2FOpenAI-DataExtractor&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/></a>
 
@@ -6,7 +6,7 @@
 
 OpenAI Data Extractor is a robust tool that specializes in extracting meaningful features from unstructured text, thereby converting raw data into actionable, structured information. Built with Streamlit, this application provides an intuitive interface for users to seamlessly extract features from unstructured documents, making data analysis tasks more efficient.
 
-🔗 Try it live here: [OpenAI Data Extractor Live App](https://openai-calc.streamlit.app)
+🔗 Try it live here: [OpenAI Data Extractor Live App](https://openai-dataextractor.streamlit.app/)
 
 
 ## 🌟 Application Demonstration
